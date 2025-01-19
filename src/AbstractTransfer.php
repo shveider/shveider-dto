@@ -63,6 +63,10 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
                 : (new $transfer())->fromArray($dataItem);
         }
 
+        if ($this->hasRegisteredArrayTransfers($name)) {
+            return $this->arrayTransfersFromArray($name, $dataItem);
+        }
+
         if ($this->hasRegisteredValueWithConstruct($name)) {
             $set = $this->getRegisteredValueWithConstruct($name);
             $obj = array_shift($set);
@@ -70,7 +74,7 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
             return count($set) > 0 ? new $obj(...$this->shiftMulti($dataItem, $set)) : new $obj();
         }
 
-        return $this->hasRegisteredArrayTransfers($name) ? $this->arrayTransfersFromArray($name, $dataItem) : $dataItem;
+        return $dataItem;
     }
 
     /** @return array<string> */
@@ -127,8 +131,13 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     protected function arrayTransfersFromArray(string $name, array $arrayValues): array
     {
         $transfer = $this->getRegisteredArrayTransfer($name);
+        $set = $this->hasRegisteredValueWithConstruct($name) ? $this->getRegisteredValueWithConstruct($name) : null;
 
-        return array_map(function ($arrayValue) use ($transfer) {
+        return array_map(function ($arrayValue) use ($transfer, $set) {
+            if ($set !== null) {
+                return (new $transfer(...$this->shiftMulti($arrayValue, $set)))->fromArray($arrayValue);
+            }
+
             return is_array($arrayValue) ? (new $transfer())->fromArray($arrayValue) : $arrayValue;
         }, $arrayValues);
     }
@@ -156,6 +165,7 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
 
     abstract protected function hasRegisteredArrayTransfers(string $name): bool;
 
+    /** @return class-string<static> */
     abstract protected function getRegisteredArrayTransfer(string $name): string;
 
     abstract protected function hasRegisteredValueWithConstruct(string $name): bool;
