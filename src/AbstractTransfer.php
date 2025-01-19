@@ -98,14 +98,10 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     protected function recursiveModifiedToArray(string $name, mixed $value): mixed
     {
         if (is_array($value) && $this->hasRegisteredArrayTransfers($name)) {
-            $values = [];
-
-            foreach ($value as $item) {
-                $values[] = $item && is_a($item, DataTransferObjectInterface::class)
+            return array_map(function ($item) {
+                return $item && is_a($item, DataTransferObjectInterface::class)
                     ? $item->modifiedToArray(true) : $item;
-            }
-
-            return $values;
+            }, $value);
         }
 
         return $value && is_a($value, DataTransferObjectInterface::class)
@@ -114,13 +110,9 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
 
     protected function arrayOfTransfersToArray(array $arrayValue, bool $recursive = false): array
     {
-        $values = [];
-
-        foreach ($arrayValue as $item) {
-            $values[] = $item && is_a($item, DataTransferObjectInterface::class) ? $item->toArray($recursive) : $item;
-        }
-
-        return $values;
+        return array_map(function ($item) use ($recursive) {
+            return $item && is_a($item, DataTransferObjectInterface::class) ? $item->toArray($recursive) : $item;
+        }, $arrayValue);
     }
 
     protected function recursiveToArray(string $name, mixed $value): mixed
@@ -135,13 +127,10 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     protected function arrayTransfersFromArray(string $name, array $arrayValues): array
     {
         $transfer = $this->getRegisteredArrayTransfer($name);
-        $values = [];
 
-        foreach ($arrayValues as $arrayValue) {
-            $values[] = is_array($arrayValue) ? (new $transfer())->fromArray($arrayValue) : $arrayValue;
-        }
-
-        return $values;
+        return array_map(function ($arrayValue) use ($transfer) {
+            return is_array($arrayValue) ? (new $transfer())->fromArray($arrayValue) : $arrayValue;
+        }, $arrayValues);
     }
 
     protected function modify(string $name): static
