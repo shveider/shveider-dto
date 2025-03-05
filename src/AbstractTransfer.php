@@ -153,8 +153,12 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     {
         $res = [];
 
+        if (count($values) === 0) {
+            return [$array];
+        }
+
         foreach ($values as $value) {
-            if (isset($array[$value])) {
+            if (array_key_exists($value, $array)) {
                 $res[$value] = $array[$value];
                 unset($array[$value]);
             }

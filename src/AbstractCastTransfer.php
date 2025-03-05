@@ -15,10 +15,10 @@ class AbstractCastTransfer extends AbstractTransfer
 
     /**
      * @var array{
-     *     collections: array,
-     *     constructs: array,
-     *     transfers: array,
-     *     vars: array
+     *     collections: array<string, class-string>,
+     *     constructs: array<string, array<string>>,
+     *     transfers: array<string, class-string>,
+     *     vars: array<string>
      * }
      */
     protected array $__casts = [];
