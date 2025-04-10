@@ -22,7 +22,7 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         foreach ($this->getClassVars() as $name) {
             if (array_key_exists($name, $data)) {
                 $this->modify($name)->$name =
-                    is_array($data[$name]) ? $this->getValueFromArray($data[$name], $name) : $data[$name];
+                    is_array($data[$name]) ? $this->getValueFromArray($data[$name], $name) : $this->fromValue($data[$name]);
             }
         }
 
@@ -52,6 +52,11 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     public function toJson(bool $pretty = false): string
     {
         return json_encode($this->toArray(true), $pretty ? JSON_PRETTY_PRINT : 0);
+    }
+
+    protected function fromValue(mixed $value): mixed
+    {
+        return $value instanceof Transferable ? $value->transfer() : $value;
     }
 
     protected function getValueFromArray(array $dataItem, string $name): mixed
