@@ -23,35 +23,13 @@ Because parent class or trait don't have access to child props.
 
 [read more](docs/AbstractCastTransfer.md)
 
-### 3. `AbstractCachedTransfer`
-- Uses a generated cache to store DTO metadata, avoiding the overhead of reflection.
-- Ideal for performance-critical applications.
-- **Performance**: Fast, with no runtime reflection involved.
-
-[read more](docs/AbstractCachedTransfer.md)
-
-### 2. `AbstractCastDynamicTransfer`
+### 3. `AbstractCastDynamicTransfer`
 - Relies on casting to handle DTO properties.
 - Simplified, does not provide setters/getters.
 - **Performance**: Very fast, but lacks the convenience of configurable options.
 - Has getters, setters and adders.
 
 ## Commands
-
-### Generating Cache Command
-
-You can generate the necessary cache for DTOs using the provided command:
-
-```php
-(new GenerateDtoCacheFile(
-    new ShveiderDtoFactory(),
-    new GenerateDTOConfig(
-        readFrom: __DIR__ . '/../tests/CacheDTO/*/Transfers',
-        writeTo:  __DIR__ . '/../src/Cache/',
-        writeToNamespace: 'ShveiderDto\Cache',
-    )
-))->execute();
-```
 
 ### Generating Traits Command
 Use the following command to generate DTO traits:
@@ -160,11 +138,9 @@ These methods provide a flexible way to work with data transfer objects, allowin
 
 More documentation:
 - [docs](docs)
-- [AbstractCachedTransfer.md](docs%2FAbstractCachedTransfer.md)
 - [AbstractCastTransfer.md](docs%2FAbstractCastTransfer.md)
 - [AbstractConfigurableTransfer.md](docs%2FAbstractConfigurableTransfer.md)
 - [AbstractReflectionTransfer.md](docs%2FAbstractReflectionTransfer.md)
 - [MANUALLY_CONFIGURED_TRANSFER.md](docs%2FMANUALLY_CONFIGURED_TRANSFER.md)
-- [USE_CACHE_GENERATOR.md](docs%2FUSE_CACHE_GENERATOR.md)
 - [USING_REFLECTION.md](docs%2FUSING_REFLECTION.md)
 - [USING_TRAITS.md](docs%2FUSING_TRAITS.md)

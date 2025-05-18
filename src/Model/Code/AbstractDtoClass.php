@@ -21,8 +21,6 @@ abstract class AbstractDtoClass implements DtoClassInterface
 
     protected array $registeredValuesWithConstruct = [];
 
-    protected string $cacheClass;
-
     public function __construct(protected readonly string $name)
     {
     }
@@ -91,16 +89,6 @@ abstract class AbstractDtoClass implements DtoClassInterface
     public function addRegisteredArrayObject(string $varName, string $registeredArrayObject): void
     {
         $this->registeredArrayObjects[$varName] = $registeredArrayObject;
-    }
-
-    public function getCacheClass(): ?string
-    {
-        return $this->cacheClass ?? null;
-    }
-
-    public function setCacheClass(string $cacheClass): void
-    {
-        $this->cacheClass = $cacheClass;
     }
 
     protected function mapArrayToString(array $array, callable $mapCallback): string

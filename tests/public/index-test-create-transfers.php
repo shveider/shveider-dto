@@ -77,11 +77,8 @@ $WRITE_CASTS_FOR = ['AbstractCastDynamicTransfer', 'AbstractCastTransfer'];
 $WRITE_REG_FOR = ['AbstractSetTransfer'];
 
 !file_exists(__DIR__ . '/../Transfers') && mkdir(__DIR__ . '/../Transfers');
-!file_exists(__DIR__ . '/../Transfers/ProjectLevelAbstractCachedTransfer') && mkdir(__DIR__ . '/../Transfers/ProjectLevelAbstractCachedTransfer');
-file_put_contents(__DIR__ . '/../Transfers/ProjectLevelAbstractCachedTransfer/ProjectLevelAbstractCachedTransfer.php', "<?php\nnamespace ShveiderDtoTest\Transfers\ProjectLevelAbstractCachedTransfer;\nclass ProjectLevelAbstractCachedTransfer extends \ShveiderDto\AbstractCachedTransfer\n{\nprotected string \$__cache = '\ShveiderDtoTest\Cache\TransferCache';\n}");
 
 $DTO_TYPES = [
-    'ProjectLevelAbstractCachedTransfer',
     'AbstractCastDynamicTransfer',
     'AbstractCastTransfer',
     'AbstractConfigurableTransfer',
@@ -98,8 +95,7 @@ function build(string $dtoType, array $DTO, array $WRITE_CASTS_FOR, array $WRITE
     $defaultClass = "<?php declare(strict_types=1);\n\nnamespace ShveiderDtoTest\Transfers\\$dtoType;\n\n";
     $defaultClass .= "use ShveiderDto\Attributes as A;\nuse ShveiderDtoTest\VO\TestVo;\n";
 
-    $dtoType !== 'ProjectLevelAbstractCachedTransfer' &&
-        $defaultClass .= "use ShveiderDto\\$dtoType;\n";
+    $defaultClass .= "use ShveiderDto\\$dtoType;\n";
 
     $security = match ($dtoType) {
         'AbstractConfigurableTransfer', 'AbstractCastDynamicTransfer' => 'protected',

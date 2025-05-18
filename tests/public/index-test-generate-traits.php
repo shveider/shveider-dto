@@ -24,7 +24,6 @@ foreach ((new DtoFilesReader())->getFilesGenerator($sharedConfig) as $item) {
     assert(file_exists($item->filesDir . '/Generated/' . $item->traitName . '.php'));
     $namespace = $item->getFullNamespace();
     class_exists($namespace . '\\' . $item->traitName);
-    var_dump($namespace . '\\' . $item->traitName);
 }
 
 $modulesConfig = new GenerateDTOConfig(
@@ -44,5 +43,4 @@ foreach ((new DtoFilesReader())->getFilesGenerator($sharedConfig) as $item) {
     assert(file_exists(__DIR__ . '/../Transfers/Generated/' . $item->traitName . '.php'));
     $namespace = $item->getFullNamespace();
     class_exists($namespace . '\\' . $item->traitName);
-    var_dump($namespace . '\\' . $item->traitName);
 }

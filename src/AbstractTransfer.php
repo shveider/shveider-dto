@@ -13,8 +13,10 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         '__private_registered_vars' => 1,
     ];
 
+    /** @var array<string, bool> */
     protected array $__modified = [];
 
+    /** @var list<string> */
     private array $__private_registered_vars;
 
     public function fromArray(array $data): static
@@ -156,12 +158,11 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
 
     private function shiftMulti(array &$array, array $values): array
     {
-        $res = [];
-
         if (count($values) === 0) {
             return [$array];
         }
 
+        $res = [];
         foreach ($values as $value) {
             if (array_key_exists($value, $array)) {
                 $res[$value] = $array[$value];
@@ -170,6 +171,11 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         }
 
         return $res;
+    }
+
+    public function isModified(string $name): bool
+    {
+        return $this->__modified[$name] ?? false;
     }
 
     abstract protected function hasRegisteredArrayTransfers(string $name): bool;

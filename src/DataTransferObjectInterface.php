@@ -5,8 +5,7 @@ namespace ShveiderDto;
 interface DataTransferObjectInterface
 {
     /**
-     * Specification:
-     * - Takes values from array and set it to defined properties in your data transfer object.
+     * Takes values from array and set it to defined properties in your data transfer object.
      *
      * @param array $data
      *
@@ -15,8 +14,7 @@ interface DataTransferObjectInterface
     public function fromArray(array $data): static;
 
     /**
-     * Specification:
-     * - Takes properties in your data transfer object and returns it ass array key => value.
+     * Takes properties in your data transfer object and returns it ass array key => value.
      *
      * @param bool $recursive - if your data transfer object have another dto inside call this method for this dto as well.
      *
@@ -25,23 +23,23 @@ interface DataTransferObjectInterface
     public function toArray(bool $recursive = false): array;
 
     /**
-     * Specification:
-     *  - Takes modified properties in your data transfer object and returns it ass array key => value.
-     *  - Modified properties: properties that was modified by fromArray and set* method.
+     * Returns the modified properties of the data transfer object as an associative array (key => value).
+     * Modified properties are those changed via the fromArray() method or any set*() method.
      *
-     * @param bool $recursive
+     * @param bool $recursive Whether to recursively include modified nested objects.
      *
-     * @return array
+     * @return array The array of modified properties.
      */
     public function modifiedToArray(bool $recursive = false): array;
 
     /**
-     * Specification:
-     * - Calls toArray method inside and convert it to json string.
+     * Calls toArray method inside and convert it to json string.
      *
      * @param bool $pretty
      *
      * @return string
      */
     public function toJson(bool $pretty = false): string;
+
+    public function isModified(string $name): bool;
 }

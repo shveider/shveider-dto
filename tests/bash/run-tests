@@ -13,14 +13,6 @@ fi
 
 sleep 1
 
-echo "Run index-test-generate-cache Test \n"
-php public/index-test-generate-cache.php;
-if [ $? -ne 0 ]; then
-  exit 1
-fi
-
-sleep 1
-
 echo "Run index-test-generate-traits Test \n"
 php public/index-test-generate-traits.php;
 if [ $? -ne 0 ]; then

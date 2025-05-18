@@ -16,5 +16,4 @@ function testCase(string $transferNamespace, bool $useMethods, bool $testMethods
 
 testCase('AbstractCastTransfer', false);
 testCase('AbstractCastDynamicTransfer', true, testMethodsFeatures: true);
-testCase('ProjectLevelAbstractCachedTransfer', false);
 testCase('AbstractConfigurableTransfer', true, testMethodsFeatures: true);

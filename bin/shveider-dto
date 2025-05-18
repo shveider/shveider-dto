@@ -41,7 +41,6 @@ $config = new \ShveiderDto\GenerateDTOConfig(
 
 $commandClass = match ($command) {
     'generate-php-doc' => \ShveiderDto\Command\GeneratePhpDocStubCommand::class,
-    'generate-cache' => \ShveiderDto\Command\GenerateDtoCacheFile::class,
     'generate-traits' => \ShveiderDto\Command\GenerateDtoTraitsCommand::class,
     'list' => 'list',
     default => null,
@@ -49,7 +48,6 @@ $commandClass = match ($command) {
 
 if ($commandClass === 'list' || $commandClass === null) {
     echo "generate-php-doc: Creates php-doc block for your transfer by path\n";
-    echo "generate-cache: Creates cache file with settings for your transfer by path\n";
     echo "generate-traits: Creates traits with settings/method for you transfer by path\n";
     exit((int)($commandClass === null));
 }

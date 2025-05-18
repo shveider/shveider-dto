@@ -4,13 +4,11 @@ namespace ShveiderDto\Plugins;
 
 use ReflectionClass;
 use ShveiderDto\AbstractConfigurableTransfer;
-use ShveiderDto\AbstractReflectionTransfer;
 use ShveiderDto\AbstractTransfer;
 use ShveiderDto\Constants;
 use ShveiderDto\GenerateDTOConfig;
 use ShveiderDto\Model\Code\AbstractDtoClass;
 use ShveiderDto\ShveiderDtoExpanderPluginsInterface;
-use ShveiderDto\AbstractCachedTransfer;
 
 class RegisteredVarsShveiderDtoExpanderPlugin implements ShveiderDtoExpanderPluginsInterface
 {
@@ -37,7 +35,7 @@ class RegisteredVarsShveiderDtoExpanderPlugin implements ShveiderDtoExpanderPlug
                 continue;
             }
 
-            if (is_a($parentClass, AbstractTransfer::class, true) || in_array($parentClass, [AbstractTransfer::class, AbstractReflectionTransfer::class, AbstractCachedTransfer::class, AbstractConfigurableTransfer::class])) {
+            if (is_a($parentClass, AbstractTransfer::class, true) || in_array($parentClass, [AbstractTransfer::class, AbstractConfigurableTransfer::class])) {
                 $abstractDtoObject
                     ->addRegisteredTransfer($property->getName(), $property->getType()->getName());
             }
