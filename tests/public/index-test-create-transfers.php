@@ -9,11 +9,13 @@ $DTO = [
                 'attr' => ['ValueWithConstruct'],
             ],
             'testAssociative' => 'TestAssociativeTransfer',
+            'product' => 'ProductTransfer',
         ],
         '__casts' => [
             'transfers' => [
                 'testAssociative' => 'TestAssociativeTransfer::class',
                 'customer' => 'CustomerTransfer::class',
+                'product' => 'ProductTransfer::class',
             ],
             'constructs' => [
                 'testVo' => ['TestVo::class', 'vString', 'vInt', 'vArray'],
@@ -69,6 +71,25 @@ $DTO = [
         '__casts' => [
             'transfers' => ['city' => 'CityTransfer::class'],
             'constructs' => ['city' => ['key', 'name']],
+        ],
+    ],
+    'WholesalePrice' => [
+        'property' => [
+            'gross' => 'int',
+        ],
+    ],
+    'ProductTransfer' => [
+        'property' => [
+            'wholesalePrices' => [
+                'type'=>'array',
+                'attr' => ['ArrayOf(WholesalePrice::class, "wholesalePrice")', 'Alias("wholesale_prices")'],
+            ],
+            'price' => 'int',
+        ],
+        '__casts' => [
+            'alias' => ['wholesalePrices' => 'wholesale_prices'],
+            'collections' => ['wholesalePrices' => 'WholesalePrice::class'],
+
         ],
     ],
 ];

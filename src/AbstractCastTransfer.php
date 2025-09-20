@@ -4,7 +4,7 @@ namespace ShveiderDto;
 
 use ShveiderDto\Traits\ModifiedOverrideTrait;
 
-class AbstractCastTransfer extends AbstractTransfer
+abstract class AbstractCastTransfer extends AbstractTransfer
 {
     use ModifiedOverrideTrait;
     protected const SHARED_SKIPPED_PROPERTIES = [
@@ -18,7 +18,8 @@ class AbstractCastTransfer extends AbstractTransfer
      *     collections: array<string, class-string>,
      *     constructs: array<string, array<string>>,
      *     transfers: array<string, class-string>,
-     *     vars: array<string>
+     *     vars: array<string>,
+     *     alias: array<string, string>
      * }
      */
     protected array $__casts = [];
@@ -51,5 +52,10 @@ class AbstractCastTransfer extends AbstractTransfer
     protected function findRegisteredVars(): ?array
     {
         return $this->__casts['vars'] ?? null;
+    }
+
+    protected function findAlias(string $name): ?string
+    {
+        return $this->__casts['alias'][$name] ?? null;
     }
 }

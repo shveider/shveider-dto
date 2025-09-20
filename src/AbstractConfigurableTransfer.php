@@ -2,8 +2,6 @@
 
 namespace ShveiderDto;
 
-use ShveiderDto\Traits\ModifiedOverrideTrait;
-
 /**
  * @property array<string> $__registered_vars
  * - Uses for mapping fields in helping methods. If not set — get_class_vars used.
@@ -17,6 +15,9 @@ use ShveiderDto\Traits\ModifiedOverrideTrait;
  * @property array<string, array<string>> $__registered_values_with_construct
  * - Uses to determine, which field is transfer with fields in a construct. To map it correctly.
  *
+ * @property array<string, string> $__registered_alias
+ * - Uses to determine, which field is alias. To map it correctly.
+ *
  */
 abstract class AbstractConfigurableTransfer extends AbstractTransfer
 {
@@ -28,6 +29,7 @@ abstract class AbstractConfigurableTransfer extends AbstractTransfer
         '__registered_ao' => 1,
         '__private_registered_vars' => 1,
         '__registered_values_with_construct' => 1,
+        '__registered_alias' => 1,
     ];
 
     protected function hasRegisteredArrayTransfers(string $name): bool
@@ -58,5 +60,10 @@ abstract class AbstractConfigurableTransfer extends AbstractTransfer
     protected function findRegisteredVars(): array
     {
         return $this->__registered_vars ?? [];
+    }
+
+    protected function findAlias(string $name): ?string
+    {
+        return $this->__registered_alias[$name] ?? null;
     }
 }

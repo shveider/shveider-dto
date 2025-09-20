@@ -20,7 +20,7 @@ interface DataTransferObjectInterface
      *
      * @return array
      */
-    public function toArray(bool $recursive = false): array;
+    public function toArray(bool $recursive = false, bool $aliased = false): array;
 
     /**
      * Returns the modified properties of the data transfer object as an associative array (key => value).
@@ -39,7 +39,7 @@ interface DataTransferObjectInterface
      *
      * @return string
      */
-    public function toJson(bool $pretty = false): string;
+    public function toJson(bool $pretty = false, bool $aliased = false): string;
 
     public function isModified(string $name): bool;
 }

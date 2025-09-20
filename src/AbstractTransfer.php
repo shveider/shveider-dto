@@ -23,18 +23,70 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     {
         foreach ($this->getClassVars() as $name) {
             if (array_key_exists($name, $data)) {
-                $this->modify($name)->$name =
-                    is_array($data[$name]) ? $this->getValueFromArray($data[$name], $name) : $this->fromValue($data[$name]);
+                $this->setFromArray($data[$name], $name);
+
+                continue;
+            }
+
+            if ($alias = $this->findAlias($name)) {
+                if (array_key_exists($alias, $data)) {
+                    $this->setFromArray($data[$alias], $name);
+                }
             }
         }
 
         return $this;
     }
 
-    public function toArray(bool $recursive = false): array
+    private function setFromArray(mixed $dataItem, string $name): void
     {
-        return array_reduce($this->getClassVars(), function (array $v, string $name) use ($recursive) {
-            $v[$name] = $recursive ? $this->recursiveToArray($name, $this->$name ?? null) : ($this->$name ?? null);
+        $this->modify($name)->$name =
+            is_array($dataItem) ? $this->getValueFromArray($dataItem, $name) : $this->fromValue($dataItem);
+    }
+
+    public function toArray(bool $recursive = false, bool $aliased = false): array
+    {
+        if ($recursive && $aliased) {
+            return $this->toArrayWithAliasRecursive();
+        }
+
+        if ($recursive) {
+            return $this->toArrayRecursive();
+        }
+
+        if ($aliased) {
+            return $this->toArrayWithAlias();
+        }
+
+        return array_reduce($this->getClassVars(), function (array $v, string $name) {
+            $v[$name] = $this->$name ?? null;
+
+            return $v;
+        }, []);
+    }
+
+    private function toArrayWithAlias(): array
+    {
+        return array_reduce($this->getClassVars(), function (array $v, string $name) {
+            $v[$this->findAlias($name) ?? $name] = $this->$name ?? null;
+
+            return $v;
+        }, []);
+    }
+
+    private function toArrayRecursive(): array
+    {
+        return array_reduce($this->getClassVars(), function (array $v, string $name) {
+            $v[$name] = $this->recursiveToArray($name, $this->$name ?? null, false);
+
+            return $v;
+        }, []);
+    }
+
+    private function toArrayWithAliasRecursive(): array
+    {
+        return array_reduce($this->getClassVars(), function (array $v, string $name) {
+            $v[$this->findAlias($name) ?? $name] = $this->recursiveToArray($name, $this->$name ?? null, true);
 
             return $v;
         }, []);
@@ -51,9 +103,9 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         return $result;
     }
 
-    public function toJson(bool $pretty = false): string
+    public function toJson(bool $pretty = false, bool $aliased = false): string
     {
-        return json_encode($this->toArray(true), $pretty ? JSON_PRETTY_PRINT : 0);
+        return json_encode($this->toArray(true, $aliased), $pretty ? JSON_PRETTY_PRINT : 0);
     }
 
     protected function fromValue(mixed $value): mixed
@@ -119,20 +171,20 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
             ? $value->modifiedToArray(true) : $value;
     }
 
-    protected function arrayOfTransfersToArray(array $arrayValue, bool $recursive = false): array
+    protected function arrayOfTransfersToArray(array $arrayValue, bool $recursive, bool $aliased): array
     {
-        return array_map(function ($item) use ($recursive) {
-            return $item && is_a($item, DataTransferObjectInterface::class) ? $item->toArray($recursive) : $item;
+        return array_map(function ($item) use ($recursive, $aliased) {
+            return $item && is_a($item, DataTransferObjectInterface::class) ? $item->toArray($recursive, $aliased) : $item;
         }, $arrayValue);
     }
 
-    protected function recursiveToArray(string $name, mixed $value): mixed
+    protected function recursiveToArray(string $name, mixed $value, bool $aliased): mixed
     {
         if (is_array($value) && $this->hasRegisteredArrayTransfers($name)) {
-            return $this->arrayOfTransfersToArray($value, true);
+            return $this->arrayOfTransfersToArray($value, true, $aliased);
         }
 
-        return $value && is_a($value, DataTransferObjectInterface::class) ? $value->toArray(true) : $value;
+        return $value && is_a($value, DataTransferObjectInterface::class) ? $value->toArray(true, $aliased) : $value;
     }
 
     protected function arrayTransfersFromArray(string $name, array $arrayValues): array
@@ -191,4 +243,6 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     abstract protected function findRegisteredTransfer(string $name): ?string;
 
     abstract protected function findRegisteredVars(): ?array;
+
+    abstract protected function findAlias(string $name): ?string;
 }

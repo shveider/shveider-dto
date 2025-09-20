@@ -21,6 +21,8 @@ abstract class AbstractDtoClass implements DtoClassInterface
 
     protected array $registeredValuesWithConstruct = [];
 
+    protected array $registeredAlias = [];
+
     public function __construct(protected readonly string $name)
     {
     }
@@ -77,6 +79,13 @@ abstract class AbstractDtoClass implements DtoClassInterface
     public function addRegisteredValueWithConstruct(string $varName, array $values): static
     {
         $this->registeredValuesWithConstruct[$varName] = $values;
+
+        return $this;
+    }
+
+    public function addRegisteredAlias(string $varName, string $alias): static
+    {
+        $this->registeredAlias[$varName] = $alias;
 
         return $this;
     }

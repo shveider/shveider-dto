@@ -13,10 +13,11 @@ class DtoTrait extends AbstractDtoClass
         $registeredTransfersString = $this->generateRegisteredTransfers();
         $registeredArrayTransfersString = $this->generateRegisteredArrayTransfers();
         $registeredValuesWithConstructString = $this->generateRegisteredValueWithConstructString();
+        $registeredAliasString = $this->generateRegisteredAlias();
 
         $php = "<?php\n\n";
         $namespace = "namespace $this->namespace;\n\n";
-        $traitBody = "$registeredVarsString\n\n$registeredTransfersString\n\n$registeredArrayTransfersString\n\n$registeredValuesWithConstructString\n\n$methodsString";
+        $traitBody = "$registeredVarsString\n\n$registeredTransfersString\n\n$registeredArrayTransfersString\n\n$registeredValuesWithConstructString\n\n$registeredAliasString\n\n$methodsString";
 
         return "$php$namespace$traitDoc\ntrait $this->name\n{\n$traitBody\n}\n";
     }
@@ -36,6 +37,16 @@ class DtoTrait extends AbstractDtoClass
         );
 
         return "\tprotected array \$__registered_values_with_construct = [$list];";
+    }
+
+    protected function generateRegisteredAlias(): string
+    {
+        $list = $this->mapArrayToString(
+            $this->registeredAlias,
+            fn ($name, $value) => "'$name'=>'" . $value . "'",
+        );
+
+        return "\tprotected array \$__registered_alias = [$list];";
     }
 
     protected function generateRegisteredTransfers(): string

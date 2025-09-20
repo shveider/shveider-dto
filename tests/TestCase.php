@@ -2,7 +2,6 @@
 
 namespace ShveiderDtoTest;
 
-use ShveiderDto\AbstractTransfer;
 use ShveiderDto\DataTransferObjectInterface;
 use ShveiderDtoTest\VO\TestVo;
 
@@ -50,6 +49,7 @@ class TestCase
         $this->testToJson();
 
         $this->testValueObject();
+        $this->testAlias();
     }
 
     public function testMethodsFeatures(): void
@@ -64,6 +64,10 @@ class TestCase
             'customer' => self::CUSTOMER,
             'testVo' => new TestVo('v string', 1234, [1, 2, 3]),
             'testAssociative' => [],
+            'product' => [
+                'wholesale_prices' => [],
+                'price' => 1234,
+            ],
         ]);
 
         $json = $this->transfer->toJson();
@@ -309,5 +313,25 @@ class TestCase
             ->property('city', 'is array')
             ->propEqual('city.name', self::ADDRESS_1['city']['name'])
             ->propEqual('city.key', self::ADDRESS_1['city']['key']);
+    }
+
+    protected function testAlias(): void
+    {
+        $this->transfer->fromArray([
+            'product' => [
+                'wholesale_prices' => [
+                    [
+                        'gross' => 1000,
+                    ],
+                ],
+                'price' => 1234,
+            ],
+        ]);
+
+        $arrayResult = $this->transfer->toArray(true , true);
+        $this->tester->assert($arrayResult)->propEqual('product.wholesale_prices.0.gross', 1000);
+
+        $arrayResult = $this->transfer->toArray(true);
+        $this->tester->assert($arrayResult)->propEqual('product.wholesalePrices.0.gross', 1000);
     }
 }

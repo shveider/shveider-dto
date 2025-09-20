@@ -13,6 +13,7 @@ class Constants
         '__private_registered_vars',
         '__reflection',
         '__registered_values_with_construct',
+        '__registered_alias',
         '__casts',
         '__methods',
     ];
