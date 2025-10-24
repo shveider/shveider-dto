@@ -230,6 +230,11 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         return $this->__modified[$name] ?? false;
     }
 
+    public function fromJson(string $json): static
+    {
+        return $this->fromArray(json_decode($json, true));
+    }
+
     abstract protected function hasRegisteredArrayTransfers(string $name): bool;
 
     /** @return class-string<static> */

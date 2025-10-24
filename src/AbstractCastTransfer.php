@@ -2,11 +2,8 @@
 
 namespace ShveiderDto;
 
-use ShveiderDto\Traits\ModifiedOverrideTrait;
-
 abstract class AbstractCastTransfer extends AbstractTransfer
 {
-    use ModifiedOverrideTrait;
     protected const SHARED_SKIPPED_PROPERTIES = [
         '__modified' => 0,
         '__private_registered_vars' => 1,
@@ -57,5 +54,20 @@ abstract class AbstractCastTransfer extends AbstractTransfer
     protected function findAlias(string $name): ?string
     {
         return $this->__casts['alias'][$name] ?? null;
+    }
+
+    public function modifiedToArray(bool $recursive = false): array
+    {
+        foreach (get_class_vars(static::class) as $name => $defaultValue) {
+            if (isset(static::SHARED_SKIPPED_PROPERTIES[$name]) || isset($this->__modified[$name])) {
+                continue;
+            }
+
+            if (isset($this->$name) && $this->$name !== $defaultValue) {
+                $this->modify($name);
+            }
+        }
+
+        return parent::modifiedToArray($recursive);
     }
 }

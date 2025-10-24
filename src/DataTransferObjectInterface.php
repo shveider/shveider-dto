@@ -42,4 +42,6 @@ interface DataTransferObjectInterface
     public function toJson(bool $pretty = false, bool $aliased = false): string;
 
     public function isModified(string $name): bool;
+
+    public function fromJson(string $json): static;
 }
