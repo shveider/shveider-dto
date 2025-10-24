@@ -21,6 +21,10 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
 
     public function fromArray(array $data): static
     {
+        if (empty($data)) {
+            return $this;
+        }
+
         foreach ($this->getClassVars() as $name) {
             if (array_key_exists($name, $data)) {
                 $this->setFromArray($data[$name], $name);
