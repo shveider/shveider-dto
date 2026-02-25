@@ -183,14 +183,14 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
             $arrayOfTransfers = [];
 
             foreach ($value as $key => $item) {
-                $arrayOfTransfers[$key] = $item && is_a($item, DataTransferObjectInterface::class)
+                $arrayOfTransfers[$key] = $item instanceof DataTransferObjectInterface
                     ? $item->modifiedToArray(true) : $item;
             }
 
             return $arrayOfTransfers;
         }
 
-        return $value && is_a($value, DataTransferObjectInterface::class)
+        return $value instanceof DataTransferObjectInterface
             ? $value->modifiedToArray(true) : $value;
     }
 
@@ -198,7 +198,7 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         $result = [];
 
         foreach ($arrayValue as $key => $item) {
-            $result[$key] = $item && is_a($item, DataTransferObjectInterface::class) ? $item->toArray($recursive, $aliased) : $item;
+            $result[$key] = $item instanceof DataTransferObjectInterface ? $item->toArray($recursive, $aliased) : $item;
         }
 
         return $result;
@@ -210,7 +210,7 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
             return $this->arrayOfTransfersToArray($value, true, $aliased);
         }
 
-        return $value && is_a($value, DataTransferObjectInterface::class) ? $value->toArray(true, $aliased) : $value;
+        return $value instanceof DataTransferObjectInterface ? $value->toArray(true, $aliased) : $value;
     }
 
     protected function arrayTransfersFromArray(string $name, array $arrayValues): array
