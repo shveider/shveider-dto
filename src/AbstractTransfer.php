@@ -122,7 +122,7 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
 
     protected function fromValue(string $name, mixed $value): mixed
     {
-        if ($value) {
+        if ($value && is_string($value)) {
             if ($registeredEnum = $this->findRegisteredEnum($name)) {
                 /** @var $registeredEnum class-string<\BackedEnum> */
                 return $registeredEnum::tryFrom($value);
