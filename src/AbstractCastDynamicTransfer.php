@@ -38,14 +38,15 @@ abstract class AbstractCastDynamicTransfer extends AbstractCastTransfer
             $propertyName = $this->__methods['set'][$name];
             $value = $arguments[0] ?? null;
 
-            $this->modify($propertyName)->$propertyName = is_array($value) ? $this->getValueFromArray($value, $name) : $value;
+            $this->__modified[$propertyName] = true;
+            $this->$propertyName = is_array($value) ? $this->getValueFromArray($value, $name) : $value;
 
             return $this;
         }
 
         if (isset($this->__methods['add'][$name])) {
             $propertyName = $this->__methods['add'][$name];
-            $this->modify($propertyName);
+            $this->__modified[$propertyName] = true;
 
             if (count($arguments) > 1) {
                 $this->$propertyName[$arguments[0]] = $arguments[1];

@@ -2,6 +2,7 @@
 
 namespace ShveiderDto\Plugins;
 
+use BackedEnum;
 use ReflectionClass;
 use ShveiderDto\AbstractConfigurableTransfer;
 use ShveiderDto\AbstractTransfer;
@@ -27,6 +28,10 @@ class RegisteredVarsShveiderDtoExpanderPlugin implements ShveiderDtoExpanderPlug
 
             if (!class_exists('\\' . ltrim($property->getType()->getName(), '\\'))) {
                 continue;
+            }
+
+            if (is_a('\\' . ltrim($property->getType()->getName(), '\\'), BackedEnum::class, true)) {
+                $abstractDtoObject->addRegisteredEnum($property->getName(), $property->getType()->getName());
             }
 
             $parentClass = get_parent_class('\\' . $property->getType()->getName());

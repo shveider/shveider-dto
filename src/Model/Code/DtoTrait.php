@@ -14,10 +14,17 @@ class DtoTrait extends AbstractDtoClass
         $registeredArrayTransfersString = $this->generateRegisteredArrayTransfers();
         $registeredValuesWithConstructString = $this->generateRegisteredValueWithConstructString();
         $registeredAliasString = $this->generateRegisteredAlias();
+        $registeredEnumsString = $this->generateRegisteredEnums();
 
-        $php = "<?php\n\n";
+        $php = "<?php declare(strict_types=1);\n\n";
         $namespace = "namespace $this->namespace;\n\n";
-        $traitBody = "$registeredVarsString\n\n$registeredTransfersString\n\n$registeredArrayTransfersString\n\n$registeredValuesWithConstructString\n\n$registeredAliasString\n\n$methodsString";
+        $traitBody = "$registeredVarsString";
+        $traitBody .= "\n$registeredTransfersString";
+        $traitBody .= "\n$registeredArrayTransfersString";
+        $traitBody .= "\n$registeredValuesWithConstructString";
+        $traitBody .= "\n$registeredAliasString";
+        $traitBody .= "\n$methodsString";
+        $traitBody .= "\n$registeredEnumsString";
 
         return "$php$namespace$traitDoc\ntrait $this->name\n{\n$traitBody\n}\n";
     }
@@ -55,6 +62,14 @@ class DtoTrait extends AbstractDtoClass
             ->mapArrayToString($this->registeredTransfers, fn ($name, $namespace) => "'$name' => '$namespace'");
 
         return "\tprotected array \$__registered_transfers = [$registeredTransfersList];";
+    }
+
+    protected function generateRegisteredEnums(): string
+    {
+        $registeredEnumsList = $this
+            ->mapArrayToString($this->registeredEnums, fn ($name, $namespace) => "'$name' => '$namespace'");
+
+        return "\tprotected array \$__registered_enums = [$registeredEnumsList];";
     }
 
     protected function generateRegisteredArrayTransfers(): string

@@ -18,6 +18,9 @@ namespace ShveiderDto;
  * @property array<string, string> $__registered_alias
  * - Uses to determine, which field is alias. To map it correctly.
  *
+ * @property array<string, class-string<\BackedEnum>> $__registered_enums
+ * - Uses to determine, which field is enum. To map it correctly.
+ *
  */
 abstract class AbstractConfigurableTransfer extends AbstractTransfer
 {
@@ -30,6 +33,7 @@ abstract class AbstractConfigurableTransfer extends AbstractTransfer
         '__private_registered_vars' => 1,
         '__registered_values_with_construct' => 1,
         '__registered_alias' => 1,
+        '__registered_enums' => 1,
     ];
 
     protected function hasRegisteredArrayTransfers(string $name): bool
@@ -65,5 +69,10 @@ abstract class AbstractConfigurableTransfer extends AbstractTransfer
     protected function findAlias(string $name): ?string
     {
         return $this->__registered_alias[$name] ?? null;
+    }
+
+    protected function findRegisteredEnum(string $name): ?string
+    {
+        return $this->__registered_enums[$name] ?? null;
     }
 }

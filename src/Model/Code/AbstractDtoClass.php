@@ -15,6 +15,8 @@ abstract class AbstractDtoClass implements DtoClassInterface
 
     protected array $registeredTransfers = [];
 
+    protected array $registeredEnums = [];
+
     protected array $registeredArrayTransfers = [];
 
     protected array $registeredArrayObjects = [];
@@ -58,6 +60,13 @@ abstract class AbstractDtoClass implements DtoClassInterface
     public function addRegisteredVar(string $registeredVar): static
     {
         $this->registeredVars[] = $registeredVar;
+
+        return $this;
+    }
+
+    public function addRegisteredEnum(string $varName, string $registeredEnum): static
+    {
+        $this->registeredEnums[$varName] = $registeredEnum;
 
         return $this;
     }

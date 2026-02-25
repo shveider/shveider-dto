@@ -3,6 +3,7 @@
 namespace ShveiderDtoTest;
 
 use ShveiderDto\DataTransferObjectInterface;
+use ShveiderDtoTest\VO\TestEnum;
 use ShveiderDtoTest\VO\TestVo;
 
 class TestCase
@@ -89,6 +90,7 @@ class TestCase
         $this->transfer->fromArray([
             'customer' => self::CUSTOMER,
             'testVo' => new TestVo('v string', 1234, [1, 2, 3]),
+            'testEnum' => 'test',
         ]);
 
         $this->tester->assert($this->transfer)
@@ -97,7 +99,8 @@ class TestCase
             ->propEqual('customer.email', self::CUSTOMER['email'])
             ->propEqual('customer.phone', self::CUSTOMER['phone'])
             ->property('customer.addresses', 'is array')
-            ->property('customer.addresses', 'count', 2);
+            ->property('customer.addresses', 'count', 2)
+            ->property('testEnum', 'is_a', TestEnum::class);
 
         $this->assertAddresses();
 

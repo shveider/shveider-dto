@@ -10,6 +10,7 @@ $DTO = [
             ],
             'testAssociative' => 'TestAssociativeTransfer',
             'product' => 'ProductTransfer',
+            'testEnum' => '?\ShveiderDtoTest\VO\TestEnum',
         ],
         '__casts' => [
             'transfers' => [
@@ -20,6 +21,7 @@ $DTO = [
             'constructs' => [
                 'testVo' => ['TestVo::class', 'vString', 'vInt', 'vArray'],
             ],
+            'enums' => ['testEnum' => '\ShveiderDtoTest\VO\TestEnum::class'],
         ],
     ],
     'CityTransfer' => [
@@ -170,14 +172,14 @@ function getPropertiesDefinition(array $properties, string $security, $construct
     foreach ($properties as $propertyName => $propertySet) {
         $type = is_string($propertySet) ? $propertySet : $propertySet['type'];
 
-        if (isset($propertySet['attr'])) {
+        if (is_array($propertySet) && isset($propertySet['attr'])) {
             foreach ($propertySet['attr'] as $attr) {
                 $class .= "\t#[A\\$attr]" . ($construct ? '' : PHP_EOL);
             }
         }
 
         $propertyDefinition = "\t$security $type \$$propertyName";
-        if (isset($propertySet['default'])) {
+        if (is_array($propertySet) && isset($propertySet['default'])) {
             $propertyDefinition .= " = " . $propertySet['default'];
         }
 

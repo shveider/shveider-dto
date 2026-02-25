@@ -44,8 +44,8 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
 
     private function setFromArray(mixed $dataItem, string $name): void
     {
-        $this->modify($name)->$name =
-            is_array($dataItem) ? $this->getValueFromArray($dataItem, $name) : $this->fromValue($dataItem);
+        $this->__modified[$name] ??= false;
+        $this->$name = is_array($dataItem) ? $this->getValueFromArray($dataItem, $name) : $this->fromValue($name, $dataItem);
     }
 
     public function toArray(bool $recursive = false, bool $aliased = false): array
@@ -62,38 +62,46 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
             return $this->toArrayWithAlias();
         }
 
-        return array_reduce($this->getClassVars(), function (array $v, string $name) {
-            $v[$name] = $this->$name ?? null;
+        $result = [];
 
-            return $v;
-        }, []);
+        foreach ($this->getClassVars() as $name) {
+            $result[$name] = $this->$name ?? null;
+        }
+
+        return $result;
     }
 
     private function toArrayWithAlias(): array
     {
-        return array_reduce($this->getClassVars(), function (array $v, string $name) {
-            $v[$this->findAlias($name) ?? $name] = $this->$name ?? null;
+        $result = [];
 
-            return $v;
-        }, []);
+        foreach ($this->getClassVars() as $name) {
+            $result[$this->findAlias($name) ?? $name] = $this->$name ?? null;
+        }
+
+        return $result;
     }
 
     private function toArrayRecursive(): array
     {
-        return array_reduce($this->getClassVars(), function (array $v, string $name) {
-            $v[$name] = $this->recursiveToArray($name, $this->$name ?? null, false);
+        $result = [];
 
-            return $v;
-        }, []);
+        foreach ($this->getClassVars() as $name) {
+            $result[$name] = $this->recursiveToArray($name, $this->$name ?? null, false);
+        }
+
+        return $result;
     }
 
     private function toArrayWithAliasRecursive(): array
     {
-        return array_reduce($this->getClassVars(), function (array $v, string $name) {
-            $v[$this->findAlias($name) ?? $name] = $this->recursiveToArray($name, $this->$name ?? null, true);
+        $result = [];
 
-            return $v;
-        }, []);
+        foreach ($this->getClassVars() as $name) {
+            $result[$this->findAlias($name) ?? $name] = $this->recursiveToArray($name, $this->$name ?? null, true);
+        }
+
+        return $result;
     }
 
     public function modifiedToArray(bool $recursive = false): array
@@ -112,8 +120,15 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         return json_encode($this->toArray(true, $aliased), $pretty ? JSON_PRETTY_PRINT : 0);
     }
 
-    protected function fromValue(mixed $value): mixed
+    protected function fromValue(string $name, mixed $value): mixed
     {
+        if ($value) {
+            if ($registeredEnum = $this->findRegisteredEnum($name)) {
+                /** @var $registeredEnum class-string<\BackedEnum> */
+                return $registeredEnum::tryFrom($value);
+            }
+        }
+
         return $value instanceof Transferable ? $value->transfer() : $value;
     }
 
@@ -165,21 +180,28 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     protected function recursiveModifiedToArray(string $name, mixed $value): mixed
     {
         if (is_array($value) && $this->hasRegisteredArrayTransfers($name)) {
-            return array_map(function ($item) {
-                return $item && is_a($item, DataTransferObjectInterface::class)
+            $arrayOfTransfers = [];
+
+            foreach ($value as $key => $item) {
+                $arrayOfTransfers[$key] = $item && is_a($item, DataTransferObjectInterface::class)
                     ? $item->modifiedToArray(true) : $item;
-            }, $value);
+            }
+
+            return $arrayOfTransfers;
         }
 
         return $value && is_a($value, DataTransferObjectInterface::class)
             ? $value->modifiedToArray(true) : $value;
     }
 
-    protected function arrayOfTransfersToArray(array $arrayValue, bool $recursive, bool $aliased): array
-    {
-        return array_map(function ($item) use ($recursive, $aliased) {
-            return $item && is_a($item, DataTransferObjectInterface::class) ? $item->toArray($recursive, $aliased) : $item;
-        }, $arrayValue);
+    protected function arrayOfTransfersToArray(array $arrayValue, bool $recursive, bool $aliased): array {
+        $result = [];
+
+        foreach ($arrayValue as $key => $item) {
+            $result[$key] = $item && is_a($item, DataTransferObjectInterface::class) ? $item->toArray($recursive, $aliased) : $item;
+        }
+
+        return $result;
     }
 
     protected function recursiveToArray(string $name, mixed $value, bool $aliased): mixed
@@ -196,13 +218,22 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         $transfer = $this->getRegisteredArrayTransfer($name);
         $set = $this->hasRegisteredValueWithConstruct($name) ? $this->getRegisteredValueWithConstruct($name) : null;
 
-        return array_map(function ($arrayValue) use ($transfer, $set) {
-            if ($set !== null) {
-                return (new $transfer(...$this->shiftMulti($arrayValue, $set)))->fromArray($arrayValue);
+        $result = [];
+
+        foreach ($arrayValues as $key => $arrayValue) {
+            if (!is_array($arrayValue)) {
+                $result[$key] = $arrayValue;
+                continue;
             }
 
-            return is_array($arrayValue) ? (new $transfer())->fromArray($arrayValue) : $arrayValue;
-        }, $arrayValues);
+            $instance = $set !== null
+                ? new $transfer(...$this->shiftMulti($arrayValue, $set))
+                : new $transfer();
+
+            $result[$key] = $instance->fromArray($arrayValue);
+        }
+
+        return $result;
     }
 
     protected function modify(string $name): static
@@ -254,4 +285,6 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
     abstract protected function findRegisteredVars(): ?array;
 
     abstract protected function findAlias(string $name): ?string;
+
+    abstract protected function findRegisteredEnum(string $name): ?string;
 }

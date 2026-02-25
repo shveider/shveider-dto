@@ -14,9 +14,10 @@ abstract class AbstractCastTransfer extends AbstractTransfer
      * @var array{
      *     collections: array<string, class-string>,
      *     constructs: array<string, array<string>>,
-     *     transfers: array<string, class-string>,
+     *     transfers: array<string, class-string<\ShveiderDto\DataTransferObjectInterface>>,
      *     vars: array<string>,
-     *     alias: array<string, string>
+     *     alias: array<string, string>,
+     *     enums: array<string, class-string<\BackedEnum>>
      * }
      */
     protected array $__casts = [];
@@ -56,6 +57,11 @@ abstract class AbstractCastTransfer extends AbstractTransfer
         return $this->__casts['alias'][$name] ?? null;
     }
 
+    protected function findRegisteredEnum(string $name): ?string
+    {
+        return $this->__casts['enums'][$name] ?? null;
+    }
+
     public function modifiedToArray(bool $recursive = false): array
     {
         foreach (get_class_vars(static::class) as $name => $defaultValue) {
@@ -64,7 +70,7 @@ abstract class AbstractCastTransfer extends AbstractTransfer
             }
 
             if (isset($this->$name) && $this->$name !== $defaultValue) {
-                $this->modify($name);
+                $this->__modified[$name] = true;
             }
         }
 
