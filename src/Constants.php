@@ -16,5 +16,6 @@ class Constants
         '__registered_alias',
         '__casts',
         '__methods',
+        '__registered_enums',
     ];
 }
