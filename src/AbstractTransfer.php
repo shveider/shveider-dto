@@ -44,7 +44,7 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
 
     private function setFromArray(mixed $dataItem, string $name): void
     {
-        $this->__modified[$name] ??= false;
+        $this->__modified[$name] ??= true;
         $this->$name = is_array($dataItem) ? $this->getValueFromArray($dataItem, $name) : $this->fromValue($name, $dataItem);
     }
 
