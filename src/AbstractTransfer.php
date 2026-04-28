@@ -42,6 +42,11 @@ abstract class AbstractTransfer implements DataTransferObjectInterface
         return $this;
     }
 
+    public static function make(array $data): static
+    {
+        return (new static())->fromArray($data);
+    }
+
     private function setFromArray(mixed $dataItem, string $name): void
     {
         $this->__modified[$name] ??= true;
